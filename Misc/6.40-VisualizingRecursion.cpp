@@ -1,43 +1,56 @@
-
 #include <iostream>
-#include <iomanip>
+
 using namespace std;
 
-unsigned long factorial(unsigned long); // function prototype
 
-int main() {
-   // calculate the factorials of 0 through 10
-   // for (unsigned int counter{0}; counter <= 10; ++counter) {
-   //    cout << setw(2) << counter << "! = " << factorial(counter)
-   //       << endl;
-   // }
+unsigned long factorial(unsigned long number, unsigned long depth = 0);
 
-   cout << factorial(10);
+
+int main() 
+{
+   cout << factorial(4);
 }
 
 // recursive definition of function factorial   
-unsigned long factorial(unsigned long number) {
+unsigned long factorial(unsigned long number, unsigned long depth) 
+{
    
-   static unsigned long N{number}; // static local variable
-   //cout << N << endl;
+   unsigned long result{0};
    
-   if (number <= 1) { // test for base case     
-      return 1; // base cases: 0! = 1 and 1! = 1
+
+   if (number <= 1) 
+   { // test for base case   
+
+      for (unsigned int i = 0; i < depth; i++)
+         cout << "  ";
+
+      cout << "Base Case factorial(" << number << ") called and returns 1" << endl;  
+      result = 1; 
    }
+
    else 
-   { // recursion step  
-      //cout << N << endl;
+   {
       unsigned long i{0};
-     while(i < N - number)
-     {
-        cout << "  "; ++i;
-     }
+      while(i < depth)
+      {
+         cout << "  "; ++i;
+      }
       
       
-      cout << "factorial(" << number << ") called and recursive parameter " << number << " x factorial(" << number - 1 << ") called." << endl;
+      cout << "factorial(" << number << ") called. Entering recursive call " << number << " x factorial(" << number - 1 << ")." << endl;
       
-      return number * factorial(number - 1);
+      // recursive step
+      result = number * factorial(number - 1, depth + 1); 
    }
+
+   unsigned long i{0};
+   while(i < depth)
+   {
+      cout << "  "; ++i;
+   }
+
+   cout << "factorial(" << number << ") returns " << result << endl;
+   return result;
 }
 
 
