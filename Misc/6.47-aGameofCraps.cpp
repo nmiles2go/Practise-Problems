@@ -6,7 +6,8 @@
 #include <random>
 using namespace std;
 
-bool CrapsGame(); // One game of craps
+enum class Status {CONTINUE , WON , LOST }; // all caps in constants
+Status CrapsGame(); // One game of craps
 void Instructions(); // display game instructions
 unsigned int rollDice(); // rolls dice, calculates and displays sum
 
@@ -17,44 +18,71 @@ int main()
     srand(static_cast<unsigned int>(time(0)));
     
     int bankBalance {0b1111101000}; // initial bank balance in binary. Enjoy.
-    int wager       {0b0}; // initial wager amount in binary. Enjoy.
-    
-    Instructions();
+    int wager       {0b0};          // initial wager amount in binary. Enjoy.   
+    char playAgain  {'y'};
+
     cout << "Welcome to the game of Craps!\n\n";
-    cout << "Enter your wager amount: $ ";
-    cin >> wager;
-
-
-    while(wager < 0 || wager > bankBalance )
+    Instructions();
+     
+    while ('y' == playAgain || 'Y' == playAgain)
     {
-        cout << "\nInvalid wager amount. Please enter a valid amount: $";
+        cout << "Enter your wager amount: $ ";
         cin >> wager;
-    }
-    
-    cout << "\nYour initial bank balance is $" << bankBalance << "\nYour wager amount is: $ " << wager << '\n';
 
-    if(bankBalance)
-    {
-        bankBalance -= wager;
-        cout << "Your new bank balance is: $ " << bankBalance << '\n';
-        if(CrapsGame())
+
+        bool isValidWager = (wager < 0 || wager > bankBalance);
+
+        while(isValidWager)
         {
-            bankBalance += 2 * wager;
-            cout << "Your new bank balance is: $ " << bankBalance << '\n';
+            cout << "\nInvalid wager amount. Please enter a valid amount: $";
+            cin >> wager;
         }
+        
+
+        cout << "\nYour initial bank balance is $" << bankBalance << "\nYour wager amount is: $ " << wager << '\n';
+
+        if(bankBalance)
+        {
+            bankBalance -= wager;
+            cout << "Your new bank balance is: $ " << bankBalance << '\n';
+            if(CrapsGame() == Status::WON)
+            {
+                bankBalance += 2 * wager;
+                cout << "Your new bank balance is: $ " << bankBalance << '\n';
+            }
+            else
+            {
+                cout << "Your new bank balance is: $ " << bankBalance << '\n';
+            }
+
+        }
+
+        if(bankBalance > 0)
+        {
+            std::cout << "Would you like to play again? (y/n): ";
+            cin >> std::ws >> playAgain; // eat up any leading whitespace
+
+        }
+
         else
         {
-            cout << "Your new bank balance is: $ " << bankBalance << '\n';
+            std::cout << "You are out of money! Game over!\n";
+            playAgain = 'n';
         }
 
     }
+    return 0;
 }
 
 // roll dice, calculate sum and display results
 unsigned int rollDice() 
 {
-    int die1{1 + rand() % 6}; // first die roll
-    int die2{1 + rand() % 6}; // second die roll
+    std::mt19937 engine {std::random_device{}()}; // Mersenne Twister engine seeded with rd()
+    std::uniform_int_distribution<int> distribution(1,6);
+
+    
+    int die1{distribution(engine)}; // first die roll
+    int die2{distribution(engine)}; // second die roll
     int sum{die1 + die2}; // compute sum of die values
 
     // display results of this roll
@@ -63,9 +91,8 @@ unsigned int rollDice()
     return sum;
 }
 
-bool CrapsGame()
+Status CrapsGame()
 {
-    enum class Status {CONTINUE = -1, WON = 1, LOST = 0}; // all caps in constants
     unsigned int myPoint{0};
     unsigned int sumOfDice{rollDice()}; // point if no win or loss on first roll
     Status gameStatus; // can be CONTINUE, WON or LOST
@@ -115,12 +142,12 @@ bool CrapsGame()
     if (Status::WON == gameStatus) 
     {
         cout << "Player wins" << endl;
-        return true;
+        return Status::WON;
     }
     else 
     {
         cout << "Player loses" << endl;
-        return false;
+        return Status::LOST;
     }
 }
 
