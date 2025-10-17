@@ -5,18 +5,18 @@
 #include <iostream>
 #include <random>
 
-enum class      Status          {CONTINUE, WON, LOST};  // all caps in constants
-Status          CrapsGame       (std::mt19937 &engine); // One game of craps
-void            Instructions    ();                     // display game instructions
-unsigned int    rollDice        (std::mt19937 &engine);        // rolls dice, calculates and displays sum
+enum class      Status          {CONTINUE, WON, LOST};      // all caps in constants
+Status          CrapsGame       (std::mt19937 &engine);     // One game of craps
+void            Instructions    ();                         // display game instructions
+unsigned int    rollDice        (std::mt19937 &engine);     // rolls dice, calculates and displays sum
 
 
 int main() 
 {   
-    std::mt19937 engine {std::random_device{}()}; // Mersenne Twister engine seeded with random device
+    std::mt19937 engine {std::random_device{}()};           // Mersenne Twister engine seeded with random device
     
-    int bankBalance {0b1111101000}; // initial bank balance in binary. Enjoy.
-    int wager       {0b0};          // initial wager amount in binary. Enjoy.   
+    int bankBalance {0b1111101000};                         // Initial bank balance in binary. Enjoy. ($ 1000)
+    int wager       {0b0};                                  // Initial wager amount in binary. Enjoy.  
     
     std::cout << "Welcome to the game of Craps!\n\n";
     Instructions();
@@ -54,7 +54,7 @@ int main()
         if(bankBalance > 0)
         {
             std::cout << "\n\nWould you like to play again? (y/n): ";
-            std::cin  >> std::ws >> playAgain; // eat up any leading whitespace
+            std::cin  >> std::ws >> playAgain;                  // eat up any leading whitespace
 
             if('n' == playAgain || 'N' == playAgain)
             {
@@ -82,10 +82,10 @@ int main()
 unsigned int rollDice(std::mt19937 &engine) 
 {
     
-    std::uniform_int_distribution<int> distribution(1,6); // uniform distribution between 1 and 6
+    std::uniform_int_distribution<int> distribution(1,6);       // uniform distribution between 1 and 6
     
-    int die1{distribution(engine)}; // first die roll
-    int die2{distribution(engine)}; // second die roll
+    int die1    {distribution(engine)};                         // first die roll
+    int die2    {distribution(engine)};                         // second die roll
     
     // display results of this roll
     std::cout<< "\n\nPlayer rolled " << die1 << " + " << die2 << " = " << die1 + die2 << "\n";
@@ -96,33 +96,33 @@ unsigned int rollDice(std::mt19937 &engine)
 Status CrapsGame(std::mt19937 &engine)
 {
     unsigned int myPoint{0};
-    unsigned int sumOfDice{rollDice(engine)}; // point if no win or loss on first roll
-    Status gameStatus; // can be CONTINUE, WON or LOST
+    unsigned int sumOfDice{rollDice(engine)};                   // point if no win or loss on first roll
+    Status gameStatus;                                          // can be CONTINUE, WON or LOST
 
     // determine game status and point (if needed) based on first roll
     switch (sumOfDice) 
     {
-        case 7: // win with 7 on first roll
-        case 11: // win with 11 on first roll           
+        case 7:                                                 
+        case 11:                                                          
             gameStatus = Status::WON;
             break;
-        case 2: // lose with 2 on first roll
-        case 3: // lose with 3 on first roll
-        case 12: // lose with 12 on first roll             
+        case 2:                                                
+        case 3: 
+        case 12:             
             gameStatus = Status::LOST;
             break;
-        default: // did not win or lose, so remember point
-            gameStatus = Status::CONTINUE; // game is not over
-            myPoint = sumOfDice; // remember the point
+        default:                                                // did not win or lose, so remember point
+            gameStatus = Status::CONTINUE;                      // game is not over
+            myPoint = sumOfDice; 
             std::cout<< "\n\nPoint is " << myPoint <<"\n";
-            break; // optional at end of switch  
+            break; 
     }
 
     // while game is not complete
     while (Status::CONTINUE == gameStatus) 
     { 
         // not WON or LOST
-        sumOfDice = rollDice(engine); // roll dice again
+        sumOfDice = rollDice(engine);
 
         // determine game status
         if (sumOfDice == myPoint) 
