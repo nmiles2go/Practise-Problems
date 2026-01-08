@@ -28,12 +28,12 @@ int main()
         bool isDuplicate = false;
 
        
-        for (int j = 0; j < NUM_UNIQUE_ELEMENTS; j++)
+        for (int j = 0; j < i; j++)
         {
             if (array1[i] == uniqueArray[j])
             {
                 isDuplicate = true;
-                j = NUM_UNIQUE_ELEMENTS;
+                break;
             }
         }
 
