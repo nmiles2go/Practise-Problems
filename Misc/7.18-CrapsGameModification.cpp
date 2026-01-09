@@ -3,6 +3,8 @@
 #include <cstdlib> // contains prototypes for functions srand and rand
 #include <ctime> // contains prototype for function time
 #include <array>
+#include <random>
+
 
 using namespace std;
 
@@ -32,10 +34,10 @@ int main() {
 
    for (int gameNum = 0; gameNum < countGames; gameNum++)
 {
+    int rollCount = 1;  // Track the number of rolls in THIS game
     unsigned int myPoint{0};
     Status gameStatus;
-    unsigned int sumOfDice{rollDice()};
-    int rollCount = 1;  // Track the number of rolls in THIS game
+    unsigned int sumOfDice{rollDice() + rollDice()};
  
     switch (sumOfDice) {
        case 7:
@@ -56,7 +58,7 @@ int main() {
     }
  
     while (Status::CONTINUE == gameStatus) {
-       sumOfDice = rollDice();
+       sumOfDice = rollDice() + rollDice();
        ++rollCount;  // Increment roll count for each additional roll
  
        if (sumOfDice == myPoint) { 
@@ -79,27 +81,45 @@ int main() {
     std::cout << "\nWINS % with number of rolls: \n\n";
     for (size_t i = 0; i < countRolls; i++)
     {
-        std::cout << i + 1 <<  " Rolls - > " << std::fixed << std::setprecision(2) << 
-                                                static_cast<double>(gameWinStatistics[i])/10 <<  " % " << std::endl;
+        std::cout << i + 1 <<  " Rolls - > " << gameWinStatistics[i] << std::endl;
         sum1 +=  gameWinStatistics[i];
     }
     std::cout << "\nLOSS % with number of rolls: \n\n";
     for (size_t i = 0; i < countRolls; i++)
     {
-        std::cout << i + 1 <<  " Rolls - > " << std::fixed << std::setprecision(2) <<
-                                                static_cast<double>(gameLossStatistics[i])/10 << " % " << std::endl;
+        std::cout << i + 1 <<  " Rolls - > " << gameLossStatistics[i] << std::endl;
         sum2 += gameLossStatistics[i];
     }
 
-    std::cout << "Total Win %: " << sum1/10;
+    std::cout << "\nTotal Win %: " << sum1/10;
+    std::cout << "\nAverage number of rolls per game: " << std::fixed << std::setprecision(2);
+
+    int totalRolesInAGame{0};
+    for(int rollIndex = 0; rollIndex < countRolls; rollIndex++)
+    {
+        totalRolesInAGame += (rollIndex + 1) * (gameLossStatistics[rollIndex] + gameWinStatistics[rollIndex]);
+        /* code */
+    }
+    
+    std::cout << static_cast<double>(totalRolesInAGame) / countGames;
+
 }
 
 // roll dice, calculate sum and display results
-unsigned int rollDice() {
-   int die1{1 + rand() % 6}; // first die roll
-   int die2{1 + rand() % 6}; // second die roll
-   int sum{die1 + die2}; // compute sum of die values
-   return sum;
+unsigned int rollDice() 
+{
+    int sides = 6;
+    // Create a random device to seed the generator
+    static std::random_device rd;
+    
+    // Create and seed the Mersenne Twister engine (only once)
+    static std::mt19937 gen(rd());
+    
+    // Create a uniform distribution for the dice
+    std::uniform_int_distribution<> distribution(1, sides);
+    
+    // Generate and return the roll
+    return distribution(gen);
 }
 
 
