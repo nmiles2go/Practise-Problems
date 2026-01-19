@@ -5,6 +5,22 @@
 
 using std::array;
 
+bool isValidMove(int row, int column, const auto& board) 
+{
+    return row >= 0 && row < 8 && column >= 0 && column < 8 &&  board[row][column] == 0;
+}
+
+void PrintKnightsTour(const auto& board)
+{
+   for (const auto& row : board) 
+   {
+        for (int val : row) 
+        {
+            std::cout << std::setw(3) << val << " ";
+        }
+        std::cout << '\n';
+    }
+}
 int main()
 {
     const int rows {8};
@@ -16,8 +32,6 @@ int main()
 
     array<int, moves> horizontalMoves   {2,1,-1,-2,-2,-1,1,2};
     array<int, moves> verticalMoves     {-1,-2,-2,-1,1,2,2,1};
-
-   
 
     int moveNumber;
 
@@ -49,66 +63,61 @@ int main()
     // verticalMoves[1] = -2, which means that knight moves 2 positions up.
     // verticalMoves[5] = 2, which means that knight moves 2 positions down.
 
+    // To track Knights Position.
     int currentRow {0};
     int currentColumn {4};
 
-    for (size_t move = 1; move <= 64; move++)
+    // First we have to store the value 1 in the current location of the Knight before starting the tour
+    chessBoard[currentRow][currentColumn] = 1;
+
+    for (size_t move = 2; move <= numSquaresOnChessBoard; move++)
     {
-        // generating a moveNumber for the knight (from 0 to 7)
+        // Generating a random move for the knight (from 0 to 7)
         moveNumber = valueDist(gen); 
 
         array<int, moves> testedMoves {-1,-1,-1,-1,-1,-1,-1,-1};
-        
-        if(move == 1)
-        {
-            // First we have to store the value 1 in the current location of the Knight before starting the tour
-            chessBoard[currentRow][currentColumn] = move;
-        }
+    
         // After storing the begin location, we want to check available squares out knight can move to
-        else
-        {
-            bool validMoveFound = false;
-            int attempts = 0;
+        bool validMoveFound = false;
+        int testedCount = 0;
 
-            do
+        while (!validMoveFound && testedCount < 8) 
+        {
+            if (testedMoves[moveNumber] == -1) 
             {
-                if(testedMoves.at(moveNumber) == -1)
+                testedMoves[moveNumber] = moveNumber;
+                testedCount++;
+                
+                int tempRow = currentRow + verticalMoves[moveNumber];
+                int tempColumn = currentColumn + horizontalMoves[moveNumber];
+                
+                if (isValidMove(tempRow, tempColumn, chessBoard)) 
                 {
-                    testedMoves[moveNumber] = moveNumber;
-                    attempts++;
-                    
-                    int tempRow = verticalMoves[moveNumber] + currentRow;
-                    int tempColumn = horizontalMoves[moveNumber] + currentColumn;
-                    
-                    if(tempRow >= 0 && tempColumn >= 0 && tempRow < 8 && tempColumn < 8)
-                    {
-                        if(chessBoard[tempRow][tempColumn] == 0)
-                        {
-                            currentRow = tempRow;
-                            currentColumn = tempColumn;
-                            chessBoard[currentRow][currentColumn] = move;
-                            validMoveFound = true;
-                        }
-                    }
+                    currentRow = tempRow;
+                    currentColumn = tempColumn;
+                    chessBoard[currentRow][currentColumn] = move;
+                    validMoveFound = true;
                 }
-                
-                
-                moveNumber = valueDist(gen); // Generate new move number
+                    
             }
-            while(!validMoveFound && attempts < 8);
+            
+            if (!validMoveFound && testedCount < 8) 
+            {
+                moveNumber = valueDist(gen);
+            }
         }
-
-    }
-
-// Print the chess board
-    for (size_t i = 0; i < rows; i++)
-    {
-        for (size_t j = 0; j < columns; j++)
+            
+        // Handle failure case
+        if (!validMoveFound) 
         {
-            std::cout << std::setw(3) << chessBoard[i][j] << " ";
+            std::cout << "Tour failed at move " << move - 1 << std::endl;
+            break;
         }
         
-        std::cout << std::endl;
     }
+    
+    // Print the chess board with Knight's Tour
+    PrintKnightsTour(chessBoard);
     return 0;
 }
+
