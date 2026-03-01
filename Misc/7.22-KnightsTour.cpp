@@ -16,12 +16,28 @@ void PrintKnightsTour(const auto& board)
    {
         for (int val : row) 
         {
-            std::cout << std::setw(3) << val << " ";
+            
+            if(val == 0)
+            {
+                std::cout << val << "   " ;
+            }
+            
+            else  if (val == 1)
+            {
+                std::cout << "\u274C   ";
+            }
+            else
+            {
+                std::cout << "✅   ";
+            }
+           
+
         }
         std::cout << '\n';
     }
 }
-int main()
+
+void KnightsTourBase()
 {
     const int rows {8};
     const int columns {8};
@@ -115,9 +131,15 @@ int main()
         }
         
     }
-    
+
     // Print the chess board with Knight's Tour
     PrintKnightsTour(chessBoard);
+}
+
+int main()
+{
+    
+    KnightsTourBase();
     return 0;
 }
 
