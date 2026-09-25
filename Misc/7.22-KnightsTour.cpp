@@ -6,8 +6,8 @@
 using std::array;
 
 //#define PART1
-#define PART2
-//#define PART3
+//#define PART2
+
 
 
 bool isValidMove(int row, int column, const auto& board) 
